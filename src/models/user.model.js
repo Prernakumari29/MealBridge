@@ -25,6 +25,9 @@ const userSchema = new mongoose.Schema({
         enum:["donor" , "recipient" , "admin"],
         required:true
     },
+    refreshToken:{
+        type:String
+    }
     
 }, {timestamps:true})
 
