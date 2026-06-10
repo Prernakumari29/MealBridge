@@ -42,7 +42,7 @@ const registerService = async(data)=>{
 const loginService = async(data)=>{
 
     let {email , password} = data;
-    if(!email , !password){
+    if(!email || !password){
         throw new apiError(400 , "all fields are required")
     }
     let isExisted = await UserModel.findOne({email})

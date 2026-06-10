@@ -1,8 +1,9 @@
 const UserModel = require("../models/user.model");
 const { registerService, loginService } = require("../services/authService");
 const apiResponse = require("../utils/apiResponse");
+const asyncHandler = require("../utils/asyncHandler");
 
-const registerController = async(req,res)=>{
+const registerController = asyncHandler(async(req,res)=>{
 
     let {user , accessToken , refreshToken} = await registerService(req.body) 
 
@@ -23,9 +24,9 @@ const registerController = async(req,res)=>{
     return res
     .status(201)
     .json(new apiResponse("user created succesfully" , user))
-}
+})
 
-const loginController = async(req , res)=>{
+const loginController = asyncHandler(async(req , res)=>{
     let {isExisted , refreshToken , accessToken} = await loginService(req.body)
 
     res.cookie("accessToken" , accessToken , {
@@ -43,9 +44,9 @@ const loginController = async(req , res)=>{
     return res
     .status(200)
     .json(new apiResponse("Succesfully Logged In" , isExisted))
-}
+})
 
-const logoutCOntroller = async(req, res)=>{
+const logoutCOntroller = asyncHandler(async(req, res)=>{
     await UserModel.findByIdAndUpdate(req.user.id , {refreshToken:null})
 
     res.clearCookie("accessToken");
@@ -55,7 +56,7 @@ const logoutCOntroller = async(req, res)=>{
     .status(200)
     .json( new apiResponse("user logOut successfully"));
 
-}
+})
 
 
 
