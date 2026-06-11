@@ -1,5 +1,5 @@
 const UserModel = require("../models/user.model");
-const { registerService, loginService } = require("../services/authService");
+const { registerService, loginService, getAccessToken } = require("../services/authService");
 const apiResponse = require("../utils/apiResponse");
 const asyncHandler = require("../utils/asyncHandler");
 
@@ -23,7 +23,7 @@ const registerController = asyncHandler(async(req,res)=>{
 
     return res
     .status(201)
-    .json(new apiResponse("user created succesfully" , user))
+    .json(new apiResponse(`${user.name} , welcome to MealBridge!` , user))
 })
 
 const loginController = asyncHandler(async(req , res)=>{
@@ -43,7 +43,7 @@ const loginController = asyncHandler(async(req , res)=>{
     })
     return res
     .status(200)
-    .json(new apiResponse("Succesfully Logged In" , isExisted))
+    .json(new apiResponse(`Hello ${isExisted.name}, you are now logged in` , isExisted))
 })
 
 const logoutCOntroller = asyncHandler(async(req, res)=>{
@@ -54,7 +54,23 @@ const logoutCOntroller = asyncHandler(async(req, res)=>{
 
     return res
     .status(200)
-    .json( new apiResponse("user logOut successfully"));
+    .json( new apiResponse(`See you soon, ${req.user.name}!`));
+})
+
+const getAccessTokenController = asyncHandler(async(req,res)=>{
+
+    let refreshtoken = req.cookies.refreshToken;
+    let accesstoken=  await getAccessToken(refreshtoken)
+
+    res.cookie("accesstoken" , accesstoken , {
+        httpOnly:true,
+        sameSite:"lax",
+        secure:false,
+        maxAge:15*60*1000
+    })
+    return res
+    .status(200)
+    .json(new apiResponse("Session refreshed successfully"))
 
 })
 

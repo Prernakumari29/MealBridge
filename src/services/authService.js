@@ -1,6 +1,7 @@
 const UserModel = require("../models/user.model")
 const apiError = require("../utils/apiError")
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 const { generateAccessToken, generateRefreshToken } = require("../utils/generateToken")
 
 
@@ -64,8 +65,30 @@ const loginService = async(data)=>{
     return{
         isExisted , refreshToken , accessToken
     }
+}
+
+const getAccessToken = async(refreshtoken)=>{
+
+    if(!refreshtoken){
+        throw new apiError(401, "unauthorized")
+    }
+
+    const decode = jwt.verify(refreshtoken, process.env.REFRESH_SECRET_KEY)
+
+    const user = await UserModel.findById(decode.id)
+
+    if(!user){
+        throw new apiError(404, "User not found")
+    }
+
+    if(refreshtoken !== user.refreshToken){
+        throw new apiError(401,"unauthorized request") 
+    }
+
+    let accesstoken = generateAccessToken(user._id)
+    return accesstoken;
 
 
 }
 
-module.exports = {registerService , loginService}
+module.exports = {registerService , loginService , getAccessToken}
