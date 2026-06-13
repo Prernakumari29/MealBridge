@@ -19,8 +19,18 @@ const donationServices = async(data , userId)=>{
     })
 
     return donation;
+}
 
+const getMyDonationService = async(userId)=>{
+    let findDonation = await DonorModel.find({donor:userId})
+    return findDonation;
+}
+
+const singleDonationService = async(donationId)=>{
+    let singleDonation = await DonorModel.findById(donationId)
+
+    return singleDonation;
 
 }
 
-module.exports = donationServices;
+module.exports = {donationServices , getMyDonationService , singleDonationService};
