@@ -30,7 +30,49 @@ const singleDonationService = async(donationId)=>{
     let singleDonation = await DonorModel.findById(donationId)
 
     return singleDonation;
+}
+
+const updateDonationService = async(donationId , data , userId)=>{
+
+    const donation = await DonorModel.findById(donationId);
+    if(!donation){
+        throw new apiError(404, "your donation is not found")
+    }
+
+    if(donation.donor.toString() !== userId.toString()){
+        throw new apiError(403 ,"access denied")
+    }
+
+    const updatedDonation = await DonorModel.findByIdAndUpdate(donationId , data , {new:true})
+
+    return updatedDonation;
+}
+
+const deleteDonationService = async(userId , donationId)=>{
+
+    let donation = await DonorModel.findById(donationId);
+    if(!donation){
+        throw new apiError(404,"donation not found")
+    }
+
+    if(donation.donor.toString() !== userId.toString()){
+        throw new apiError(403 , "access denied")
+    }
+
+    const deletion = await DonorModel.findByIdAndDelete(donationId);
+    return deletion;
+}
+
+const trackDonationStatusService = async(donationId)=>{
+    const donation = await DonorModel.findById(donationId);
+
+     if(!donation){
+        throw new apiError(404,"donation not found")
+    }
+
+    return donation
 
 }
 
-module.exports = {donationServices , getMyDonationService , singleDonationService};
+
+module.exports = {donationServices , getMyDonationService , singleDonationService , updateDonationService , deleteDonationService ,trackDonationStatusService };
