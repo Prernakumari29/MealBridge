@@ -2,7 +2,8 @@ const express = require("express");
 const connected = require("./config/db");
 const cookieParser = require("cookie-parser")
 const router = require("./routes/user.routes");
-const donorRouter = require("./routes/donation.routes")
+const donorRouter = require("./routes/donation.routes");
+const recipientRouter = require("./routes/recipient.routes");
 const authmiddleware = require("./middleware/authmiddleware");
 const app = express();
 app.use(express.json())
@@ -19,5 +20,6 @@ app.get("/home" , authmiddleware , (req,res)=>{
 })
 
 app.use("/api/donations" , donorRouter )
+app.use("/api/recipient" , recipientRouter )
 
 module.exports = app;
