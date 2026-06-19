@@ -1,12 +1,13 @@
 const DonorModel = require("../models/doner.model");
 const apiError = require("../utils/apiError");
+const asyncHandler = require("../utils/asyncHandler");
 
-const availableDonationService = async()=>{
+const availableDonationService = asyncHandler(async()=>{
     const donation = await DonorModel.find({status:"available"})
     return donation;
-}
+})
 
-const claimDonationService = async(donationId , recipientId)=>{
+const claimDonationService = asyncHandler(async(donationId , recipientId)=>{
     const donation = await DonorModel.findById(donationId );
     if(!donation){
         throw new apiError(404 , "donation not found")
@@ -25,16 +26,16 @@ const claimDonationService = async(donationId , recipientId)=>{
     const claimed = await DonorModel.findByIdAndUpdate(donationId , {status:"claimed" , claimedBy:recipientId} , {new:true}).populate("claimedBy" , "name mobile email")
 
     return { donation , claimed}
-}
+})
 
-const myClaimedDonationservice = async(userId)=>{
+const myClaimedDonationservice = asyncHandler(async(userId)=>{
 
     let donation = await DonorModel.find({claimedBy:userId})
 
     return donation;
-}
+})
 
-const singleClaimedDonationService = async(userId , donationId)=>{
+const singleClaimedDonationService = asyncHandler(async(userId , donationId)=>{
 
     const donation = await DonorModel.findById(donationId)
     if(!donation){
@@ -46,8 +47,7 @@ const singleClaimedDonationService = async(userId , donationId)=>{
     }
 
     return donation
-
-}
+})
 
 module.exports = {
     availableDonationService,
