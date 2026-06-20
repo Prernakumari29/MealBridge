@@ -2,12 +2,12 @@ const DonorModel = require("../models/doner.model");
 const apiError = require("../utils/apiError");
 const asyncHandler = require("../utils/asyncHandler");
 
-const availableDonationService = asyncHandler(async()=>{
+const availableDonationService = async()=>{
     const donation = await DonorModel.find({status:"available"})
     return donation;
-})
+}
 
-const claimDonationService = asyncHandler(async(donationId , recipientId)=>{
+const claimDonationService = async(donationId , recipientId)=>{
     const donation = await DonorModel.findById(donationId );
     if(!donation){
         throw new apiError(404 , "donation not found")
@@ -26,32 +26,49 @@ const claimDonationService = asyncHandler(async(donationId , recipientId)=>{
     const claimed = await DonorModel.findByIdAndUpdate(donationId , {status:"claimed" , claimedBy:recipientId} , {new:true}).populate("claimedBy" , "name mobile email")
 
     return { donation , claimed}
-})
+}
 
-const myClaimedDonationservice = asyncHandler(async(userId)=>{
+const myClaimedDonationservice = async(userId)=>{
 
     let donation = await DonorModel.find({claimedBy:userId})
 
     return donation;
-})
+}
 
-const singleClaimedDonationService = asyncHandler(async(userId , donationId)=>{
+const singleClaimedDonationService = async(userId , donationId)=>{
 
     const donation = await DonorModel.findById(donationId)
     if(!donation){
         throw new apiError(404 , "donation not found")
     }
-
-    if(donation.claimedBy.toString !== userId.toString){
+    if(donation.claimedBy.toString() !== userId.toString()){
         throw new apiError(403 , "access denied")
     }
-
     return donation
-})
+}
+
+const receiveDonationService = async(donationID , userID)=>{
+
+    const donation = await DonorModel.findById(donationID)
+    if(!donation){
+        throw new apiError(404 , "donation notfound");
+    }
+    if(donation.claimedBy.toString() !== userID.toString()){
+        throw new apiError(403 , "access denied")
+    }
+    if(donation.status !== "claimed"){
+        throw new apiError(400 , "oops! item is not claimed yet")
+    }
+
+    const received = await DonorModel.findByIdAndUpdate(donationID , {status:"received"} , {new:true})
+    return received
+
+}
 
 module.exports = {
     availableDonationService,
     claimDonationService,
     myClaimedDonationservice,
-    singleClaimedDonationService
+    singleClaimedDonationService,
+    receiveDonationService,
 }

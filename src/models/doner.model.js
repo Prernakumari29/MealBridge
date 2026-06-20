@@ -22,7 +22,7 @@ const donorSchema = new mongoose.Schema({
     },
     status:{
         type:String,
-        enum:["available","claimed","Completed"],
+        enum:["available","claimed","received"],
         default:"available"
     },
     donor:{

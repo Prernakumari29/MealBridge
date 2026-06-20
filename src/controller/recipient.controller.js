@@ -1,4 +1,4 @@
-const { availableDonationService, claimDonationService, myClaimedDonationservice, singleClaimedDonationService } = require("../services/recipient.service");
+const { availableDonationService, claimDonationService, myClaimedDonationservice, singleClaimedDonationService, receiveDonationService } = require("../services/recipient.service");
 const apiResponse = require("../utils/apiResponse");
 
 const availableDonationController = async(req,res)=>{
@@ -35,9 +35,19 @@ const singleClaimedDonationController = async(req, res)=>{
     .json(new apiResponse("single donation fetched succesfully" , donation))
 }
 
+const receiveDonationController = async(req,res)=>{
+    let received = await receiveDonationService(req.params.id , req.user._id)
+
+    return res
+    .status(200)
+    .json(new apiResponse("item is sucessfully received" , received))
+
+}
+
 module.exports = {
     availableDonationController,
     claimDonationController,
     myClaimedDonationController,
-    singleClaimedDonationController
+    singleClaimedDonationController,
+    receiveDonationController
 }
