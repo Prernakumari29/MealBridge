@@ -62,6 +62,46 @@ const receiveDonationService = async(donationID , userID)=>{
 
     const received = await DonorModel.findByIdAndUpdate(donationID , {status:"received"} , {new:true})
     return received
+}
+
+const cancelClaimService = async(donationId , userId)=>{
+
+    const donation = await DonorModel.findById(donationId)
+    if(!donation){
+        throw new apiError(404 , "donation notfound");
+    }
+    if(donation.status !== "claimed"){
+        throw new apiError(400 , "donation is not claimed yet")
+    }
+
+    if(donation.claimedBy.toString !== userId.toString){
+        throw new apiError(403 , "access denied")
+    }
+
+    let cancelled = await DonorModel.findByIdAndUpdate(donationId , {status:"available" , claimedBy:null} , {new:true})
+
+    return cancelled;
+}
+
+const viewReceivedService = async( userId)=>{
+    
+
+    const found = await DonorModel.find({claimedBy:userId , status:"received"})
+    return found
+
+}
+
+const searchFoodService = async(foodName)=>{
+
+    const foods = await DonorModel.find({
+        foodName:{
+            $regex:foodName,
+            $options:"i"
+        },
+        status:"available"
+    })
+
+    return foods
 
 }
 
@@ -71,4 +111,7 @@ module.exports = {
     myClaimedDonationservice,
     singleClaimedDonationService,
     receiveDonationService,
+    cancelClaimService,
+    viewReceivedService,
+    searchFoodService
 }
