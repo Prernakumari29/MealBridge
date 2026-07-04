@@ -27,7 +27,7 @@ const registerController = asyncHandler(async(req,res)=>{
 })
 
 const loginController = asyncHandler(async(req , res)=>{
-    let {isExisted , refreshToken , accessToken} = await loginService(req.body)
+    let {user , refreshToken , accessToken} = await loginService(req.body)
 
     res.cookie("accessToken" , accessToken , {
         httpOnly:true,
@@ -43,7 +43,7 @@ const loginController = asyncHandler(async(req , res)=>{
     })
     return res
     .status(200)
-    .json(new apiResponse(`Hello ${isExisted.name}, you are now logged in` , isExisted))
+    .json(new apiResponse(`Hello ${user.name}, welcome Back :)` , user))
 })
 
 const logoutCOntroller = asyncHandler(async(req, res)=>{

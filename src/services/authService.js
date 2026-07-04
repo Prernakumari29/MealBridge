@@ -53,7 +53,7 @@ const loginService = async(data)=>{
 
     let isMatch = await bcrypt.compare(password , isExisted.password)
     if(!isMatch){
-        throw new apiError(401 , "invalid credentials")
+        throw new apiError(401 , "invalid email or password")
     }
 
     let accessToken = generateAccessToken(isExisted._id);
@@ -62,8 +62,12 @@ const loginService = async(data)=>{
     isExisted.refreshToken = refreshToken;
     await isExisted.save();
 
+    const user = await UserModel
+    .findById(isExisted._id)
+    .select("-password -refreshToken")
+
     return{
-        isExisted , refreshToken , accessToken
+        user , refreshToken , accessToken
     }
 }
 
