@@ -91,8 +91,6 @@ const getAccessToken = async(refreshtoken)=>{
 
     let accesstoken = generateAccessToken(user._id)
     return accesstoken;
-
-
 }
 
 module.exports = {registerService , loginService , getAccessToken}
